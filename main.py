@@ -20,6 +20,15 @@ def Addressing():
     return R
     
 
+def ToHex(x):
+    if x<0:
+        x=hex(x)[3:]
+        x="-"+x
+        return x
+    else:
+        return (hex(x)[2:])
+
+
 
 Input=[]
 with open("input.txt") as w_input:
@@ -59,7 +68,7 @@ for i in range (len(Input)):
             elif Input[j][1]==Input[i][0]:
                 op_code[j-1][2]=Address
         op_code[i-2][0]=Address
-        op_code[i-2][1]=hex(int(Input[i][2]))
+        op_code[i-2][1]=ToHex(int(Input[i][2]))
                         
 # except:
 #     print("Eror")
