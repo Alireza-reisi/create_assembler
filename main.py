@@ -41,7 +41,7 @@ with open("input.txt") as w_input:
 
 Loc=None
 HLTflag=False
-op_code=[[0 for i in range(3)] for j in range (len(Input)-3)]
+op_code=[[None for i in range(3)] for j in range (len(Input)-3)]
 # Hex_Program=[[0 for i in range(2)] for j in range (len(Input))]
 
 
