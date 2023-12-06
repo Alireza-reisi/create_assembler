@@ -18,8 +18,7 @@ class SymbolicOPCode():
     
     def ToHex(self,x):
         if x<0:
-            x=hex(x)[3:]
-            x="-"+x
+            x=hex(65536+x)[2:]
             return x
         else:
             return (hex(x)[2:])
@@ -76,14 +75,18 @@ class SymbolicOPCode():
                 
                 
 # -----------------------------------------------------------------------------------
+# ===================================================================================
 
 class HexaProgram():
     def __init__(self,op_code):
         self.OPCodeList=op_code #op_code is an object for "class SymbolicOPCode()"
         self.Hex_Program=[[None for i in range(2)] for j in range (len(self.OPCodeList.op_code))]
+        self.HLT_flag=False
     
     
     def OPCodeBuilder(self,op_code,address): # get 3 bit address and an Instructions and return 4 bit op-code
+        # Memory instructions:
+        
         if op_code=="ADD":
             x="0"
             return x+str(address)
@@ -105,43 +108,71 @@ class HexaProgram():
         elif op_code=="ISZ":
             x="6"
             return x+str(address)
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
-        elif op_code=="ISZ":
-            pass
+        
+        # Registerical instructions:
+        
+        elif op_code=="CLA":
+            return "7800"
+        elif op_code=="CLE":
+            return "7400"
+        elif op_code=="CMA":
+            return "7200"
+        elif op_code=="CME":
+            return "7100"
+        elif op_code=="CIR":
+            return "7080"
+        elif op_code=="CIL":
+            return "7040"
+        elif op_code=="INC":
+            return "7020"
+        elif op_code=="SPA":
+            return "7010"
+        elif op_code=="SNA":
+            return "7008"
+        elif op_code=="SZA":
+            return "7004"
+        elif op_code=="SZE":
+            return "7002"
+        elif op_code=="HLT":
+            self.HLT_flag=True
+            return "7001"
+        
+        # I/O instructions:
+        
+        elif op_code=="INP":
+            return "F800"
+        elif op_code=="OUT":
+            return "F400"
+        elif op_code=="SKI":
+            return "F200"
+        elif op_code=="SKO":
+            return "F100"
+        elif op_code=="ION":
+            return "F080"
+        elif op_code=="IOF":
+            return "F040"
+        
+        # ---------------
+        else:
+            return "ERROR"
+        
+        
         
     def Run(self):
         for i in range(len(self.OPCodeList.op_code)):
             self.Hex_Program[i][0]=self.OPCodeList.op_code[i][0]
-            self.Hex_Program[i][1]=self.OPCodeBuilder(self.OPCodeList.op_code[i][1],self.OPCodeList.op_code[i][2])
-        
+            if self.HLT_flag==False:
+                if len(self.OPCodeList.op_code[i])>=3:
+                    self.Hex_Program[i][1]=self.OPCodeBuilder(self.OPCodeList.op_code[i][1],self.OPCodeList.op_code[i][2])
+                else:
+                    self.Hex_Program[i][1]=self.OPCodeBuilder(self.OPCodeList.op_code[i][1],"XXX")
+            else:
+                pass
 
+
+# -----------------------------------------------------------------------------------
+# ===================================================================================
+# ---------------------------------- main -------------------------------------------
 
 # getting input:
 Input=[]
@@ -170,9 +201,9 @@ print("---------------")
 # Hexa program List:
 
 
-# hex_List=HexaProgram(OP_Code_List)
-# hex_List.Run()
+hex_List=HexaProgram(OP_Code_List)
+hex_List.Run()
 
 
-# for i in range (len(hex_List.Hex_Program)):
-#     print(hex_List.Hex_Program[i])
+for i in range (len(hex_List.Hex_Program)):
+    print(hex_List.Hex_Program[i])
