@@ -2,13 +2,12 @@ class SymbolicOPCode():
     def __init__(self,Input):
         self.Loc=None
         self.HLTflag=False
-        self.op_code=[[None for i in range(3)] for j in range (len(Input)-2)]
+        self.op_code=[[None for i in range(3)] for j in range (len(Input)-self.ORGCounter(len(Input),Input))]
         
            
     def OH(self,Var): # ORG - HLT - END
         if(Var=="HLT"):
             self.HLTflag=True
-            self.Loc+=1
         else:
             self.Loc=Var
 
@@ -33,6 +32,13 @@ class SymbolicOPCode():
         elif x<1000: 
             return ""  +str(x)
         
+    def ORGCounter(self,n,Input):
+        count=0
+        for i in range(n):
+            if Input[i][0]=="ORG":
+                count+=1
+        return count
+    
     def Run(self,Input):
         for i in range (len(Input)):
             if (Input[i][0]=="ORG"):
@@ -44,23 +50,29 @@ class SymbolicOPCode():
                     self.op_code[-1][1]=self.Three_Bitter(0)
                     return
                 elif (Input[i][0]=="HLT"):
-                    self.op_code[self.Loc][1]=Input[i][0]
+                    ORGCounter=self.ORGCounter(i,Input)
+                    self.op_code[i-ORGCounter][0]=self.Three_Bitter(self.Addressing())
+                    self.op_code[i-ORGCounter][1]=Input[i][0]
                     self.OH(Input[i][0])
                 
             elif(self.HLTflag==False):
+                ORGCounter=self.ORGCounter(i,Input)
                 Address=self.Three_Bitter(self.Addressing())
-                self.op_code[i-1][0]=Address
-                self.op_code[i-1][1]=Input[i][0]
+                self.op_code[i-ORGCounter][0]=Address
+                self.op_code[i-ORGCounter][1]=Input[i][0]
                 
             elif(self.HLTflag==True):
                 Address=self.Three_Bitter(self.Addressing()) 
                 for j in range (len(Input)):
-                    if Input[j][0]=="HLT":
+                    if Input[j][0]=="HLT" or Input[j][0]=="END" :
                         break
-                    elif Input[j][1]==Input[i][0]:
-                        self.op_code[j-1][2]=Address
-                self.op_code[i-1][0]=Address
-                self.op_code[i-1][1]=self.ToHex(int(Input[i][2]))
+                    if (len(Input[j])>=3):
+                        if Input[j][1]==Input[i][0]:
+                            ORGCounter=self.ORGCounter(j,Input)
+                            self.op_code[j-ORGCounter][2]=Address
+                ORGCounter=self.ORGCounter(i,Input)
+                self.op_code[i-ORGCounter][0]=Address
+                self.op_code[i-ORGCounter][1]=self.ToHex(int(Input[i][2]))
                 
                 
 # -----------------------------------------------------------------------------------
@@ -71,24 +83,58 @@ class HexaProgram():
         self.Hex_Program=[[None for i in range(2)] for j in range (len(self.OPCodeList.op_code))]
     
     
-    def OPCodeBuilder(self,op_code,address):
+    def OPCodeBuilder(self,op_code,address): # get 3 bit address and an Instructions and return 4 bit op-code
         if op_code=="ADD":
             x="0"
+            return x+str(address)
         elif op_code=="AND":
             x="1"
+            return x+str(address)
         elif op_code=="LDA":
             x="2"
+            return x+str(address)
         elif op_code=="STA":
             x="3"
+            return x+str(address)
         elif op_code=="BUN":
             x="4"
+            return x+str(address)
         elif op_code=="BSA":
             x="5"
+            return x+str(address)
         elif op_code=="ISZ":
             x="6"
-        else:
-            x="9"
-        return x+str(address)
+            return x+str(address)
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
+        elif op_code=="ISZ":
+            pass
         
     def Run(self):
         for i in range(len(self.OPCodeList.op_code)):
@@ -124,9 +170,9 @@ print("---------------")
 # Hexa program List:
 
 
-hex_List=HexaProgram(OP_Code_List)
-hex_List.Run()
+# hex_List=HexaProgram(OP_Code_List)
+# hex_List.Run()
 
 
-for i in range (len(hex_List.Hex_Program)):
-    print(hex_List.Hex_Program[i])
+# for i in range (len(hex_List.Hex_Program)):
+#     print(hex_List.Hex_Program[i])
