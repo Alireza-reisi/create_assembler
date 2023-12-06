@@ -7,4 +7,3 @@ A	    DEC	83	/Decimal operand
 B	    DEC	-23	/Decimal operand
 C	    DEC	0	/Sum stored in location C
 	    END
-		
