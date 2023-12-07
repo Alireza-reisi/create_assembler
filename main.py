@@ -2,10 +2,10 @@ class SymbolicOPCode():
     def __init__(self,Input):
         self.Loc=None
         self.HLTflag=False
-        self.op_code=[[None for i in range(3)] for j in range (len(Input)-self.ORGCounter(len(Input),Input))]
+        self.op_code=[[None for i in range(3)] for j in range (len(Input)-self.ORGCounter(len(Input),Input)-1)]
         
            
-    def OH(self,Var): # ORG - HLT - END
+    def OH(self,Var): # ORG - HLT
         if(Var=="HLT"):
             self.HLTflag=True
         else:
@@ -19,17 +19,19 @@ class SymbolicOPCode():
     def ToHex(self,x):
         if x<0:
             x=hex(65536+x)[2:]
+            x=self.N_Bitter(x,4)
             return x
         else:
-            return (hex(x)[2:])
+            x=hex(x)[2:]
+            x=self.N_Bitter(x,4)
+            return x
         
-    def Three_Bitter(self,x):
-        if x<10:
-            return "00"+str(x)
-        elif x<100:
-            return "0" +str(x)
-        elif x<1000: 
-            return ""  +str(x)
+    def N_Bitter(self,x,n):
+        x=str(x)
+        while (len(x)<n):
+            z="0"
+            x=z+x
+        return x
         
     def ORGCounter(self,n,Input):
         count=0
@@ -45,23 +47,21 @@ class SymbolicOPCode():
                 
             elif(Input[i][0]=="HLT" or Input[i][0]=="END"):
                 if (Input[i][0]=="END"):
-                    self.op_code[-1][0]=self.Three_Bitter(self.Loc)
-                    self.op_code[-1][1]=self.Three_Bitter(0)
                     return
                 elif (Input[i][0]=="HLT"):
                     ORGCounter=self.ORGCounter(i,Input)
-                    self.op_code[i-ORGCounter][0]=self.Three_Bitter(self.Addressing())
+                    self.op_code[i-ORGCounter][0]=self.N_Bitter(self.Addressing(),3)
                     self.op_code[i-ORGCounter][1]=Input[i][0]
                     self.OH(Input[i][0])
                 
             elif(self.HLTflag==False):
                 ORGCounter=self.ORGCounter(i,Input)
-                Address=self.Three_Bitter(self.Addressing())
+                Address=self.N_Bitter(self.Addressing(),3)
                 self.op_code[i-ORGCounter][0]=Address
                 self.op_code[i-ORGCounter][1]=Input[i][0]
                 
             elif(self.HLTflag==True):
-                Address=self.Three_Bitter(self.Addressing()) 
+                Address=self.N_Bitter(self.Addressing(),3) 
                 for j in range (len(Input)):
                     if Input[j][0]=="HLT" or Input[j][0]=="END" :
                         break
@@ -167,8 +167,40 @@ class HexaProgram():
                 else:
                     self.Hex_Program[i][1]=self.OPCodeBuilder(self.OPCodeList.op_code[i][1],"XXX")
             else:
-                pass
+                self.Hex_Program[i][1]=self.OPCodeList.op_code[i][1]
 
+                
+# -----------------------------------------------------------------------------------
+# ===================================================================================
+
+class BinaryProgram():
+    def __init__(self,HexProgram):
+        self.HexProgramList=HexProgram # it's an object from HexProgram class
+        self.Binary_Program=[[None for i in range(2)] for j in range (len(self.HexProgramList.Hex_Program))]
+        
+    def DecToBinary(self,x):
+        x=int(x)
+        x=bin(x)[2:]
+        x=self.N_Bitter(x,10)
+        return x
+    
+    def HexToBinary(self,x):
+        x=int(x,16)
+        x=bin(x)[2:]
+        x=self.N_Bitter(x,16)
+        return x
+    
+    def N_Bitter(self,x,n):
+        while (len(x)<n):
+            z="0"
+            x=z+x
+        return x
+    
+    def Run(self):
+        for i in range(len(self.HexProgramList.Hex_Program)):
+            self.Binary_Program[i][0]=self.DecToBinary(self.HexProgramList.Hex_Program[i][0])
+            self.Binary_Program[i][1]=self.HexToBinary(self.HexProgramList.Hex_Program[i][1])
+        
 
 # -----------------------------------------------------------------------------------
 # ===================================================================================
@@ -207,3 +239,15 @@ hex_List.Run()
 
 for i in range (len(hex_List.Hex_Program)):
     print(hex_List.Hex_Program[i])
+
+
+# --------------------
+print("---------------")
+# --------------------
+# Binary program List:
+
+Binary_List=BinaryProgram(hex_List)
+Binary_List.Run()
+
+for i in range (len(Binary_List.Binary_Program)):
+    print(Binary_List.Binary_Program[i])
